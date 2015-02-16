@@ -6,6 +6,15 @@ var fs = require('fs');
 var api = './api.xsd';
 
 describe('libxmljs', function(){
+	var bacon = '<?xml version="1.0" encoding="UTF-8"?>' +
+		    '<hungerapi>' +
+		        '<pork>' +
+			    '<id>1</id>' +
+			    '<type>bacon</type>' +
+			    '<deliciousness>9000</deliciousness>' +
+		        '</pork>' +
+		    '</hungerapi>';
+
 	describe(':schema', function() {
 		describe('#exists', function(){
 			it('should open without error', function(done){
@@ -28,15 +37,7 @@ describe('libxmljs', function(){
 
 		describe('#validate', function(){
 			it('should validate without error', function(){
-				var s = '<?xml version="1.0" encoding="utf-8"?>' +
-					'<hungerapi>' +
-					    '<pork>' +
-					        '<id>1</id>' +
-						'<type>bacon</type>' +
-						'<deliciousness>9000</deliciousness>' +
-					    '</pork>' +
-					'</hungerapi>';
-				var xml = libxml.parseXml(s);
+				var xml = libxml.parseXml(bacon);
 				assert.equal(xml.validate(xsd), true);
 				assert.equal(xml.validationErrors.length, 0);
 			});
@@ -44,17 +45,42 @@ describe('libxmljs', function(){
 
 		describe('#invalidate', function(){
 			it('should invalidate without error', function(){
-				var s = '<?xml version="1.0" encoding="utf-8"?>' +
+				var s = '<?xml version="1.0" encoding="UTF-8"?>' +
 					'<hungerapi>' +
 					    '<pork>' +
 					        '<id>1</id>' +
 						'<type>bacon</type>' +
-						'<deliciousness>nasty</deliciousness>' +
+						'<deliciousness>nasty</deliciousness>' + // heretic.
 					    '</pork>' +
 					'</hungerapi>';
 				var xml = libxml.parseXml(s);
 				assert.equal(xml.validate(xsd), false);
 				assert.equal(xml.validationErrors.length, 1);
+			});
+		});
+	});
+
+	describe(':xml', function(){
+		var xml = new libxml.Document();
+
+		describe('#build', function(){
+			it('should build without error', function(){
+				xml.node('hungerapi')
+					.node('pork')
+						.node('id', '1').parent()
+						.node('type', 'bacon').parent()
+						.node('deliciousness', '9000');
+			});
+			it('should match "bacon" without error', function(){
+				assert.equal(xml.toString(), libxml.parseXml(bacon).toString());
+			});
+		});
+
+		describe('#validate', function(){
+			it('should validate without error', function(){
+				var xsd = libxml.parseXml(fs.readFileSync(api).toString());
+				assert.equal(xml.validate(xsd), true);
+				assert.equal(xml.validationErrors.length, 0);
 			});
 		});
 	});
