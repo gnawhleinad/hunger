@@ -83,5 +83,14 @@ describe('libxmljs', function(){
 				assert.equal(xml.validationErrors.length, 0);
 			});
 		});
+
+		describe('#parse', function(){
+			it('should parse without error', function(){
+				var xml = libxml.parseXml(bacon);
+				assert.equal(xml.get('/hungerapi/pork/id/text()'), '1');
+				assert.equal(xml.get('/hungerapi/pork/type/text()'), 'bacon');
+				assert.equal(xml.get('/hungerapi/pork/deliciousness/text()'), '9000');
+			});
+		});
 	});
 });
