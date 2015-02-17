@@ -7,7 +7,11 @@ var fs = require('fs');
 var api = './api.xsd';
 
 describe('Pork', function(){
-	var bacon = new Pork('1', 'bacon', '9000');
+	var bacon = new Pork();
+	bacon.id = '1';
+	bacon.type = 'bacon';
+	bacon.deliciousness = '9000';
+
 	describe('#toXml', function(){
 		it('should serialize to xml without error', function (){
 			bacon.toXml();

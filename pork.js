@@ -1,9 +1,9 @@
 var libxml = require('libxmljs');
 
-function Pork(id, type, deliciousness){
-	this.id = id;
-	this.type = type;
-	this.deliciousness = deliciousness;
+function Pork(){
+	this.id = '';
+	this.type = '';
+	this.deliciousness = '';
 }
 
 Pork.prototype.toXml = function(){
