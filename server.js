@@ -1,6 +1,10 @@
 var restify = require('restify');
 var Pork = require('./pork');
 var libxml = require('libxmljs');
+var fs = require('fs');
+
+var api = './api.xsd';
+var xsd = libxml.parseXml(fs.readFileSync(api).toString());
 
 var porks = {};
 
@@ -27,11 +31,29 @@ function sendPork(req, res, next){
 }
 
 function receivePork(req, res, next){
-	res.send(204);
+	var pork = new Pork();
+	pork.fromXml(req.body.toString(), xsd);
+	if (!porks.hasOwnProperty(pork.id)) {
+		porks[pork.id] = pork;
+		res.send(204);
+	} else {
+		res.send(209);
+	}
 }
 
 function updatePork(req, res, next){
-	res.send(204);
+	if (porks.hasOwnProperty(req.params.id)) {
+		var pork = new Pork();
+		pork.fromXml(req.body.toString(), xsd);
+		if (req.params.id == pork.id) {
+			porks[pork.id] = pork;
+			res.send(204);
+		} else {
+			res.send(400);
+		}
+	} else {
+		res.send(404);
+	}
 }
 
 function deletePork(req, res, next){
@@ -45,10 +67,12 @@ function deletePork(req, res, next){
 
 var server = restify.createServer();
 
+server.use(restify.bodyParser());
+
 server.get('/porks', sendPork);
 server.get('/pork/:id', sendPork);
-//server.post('/porks', receivePork);
-//server.put('/pork/:id', updatePork);
+server.post('/porks', receivePork);
+server.put('/pork/:id', updatePork);
 server.del('/pork/:id', deletePork);
 
 server.listen(8080);
