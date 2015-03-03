@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hungerapi>
+	<pork>
+		<id>1</id>
+		<type>bacon</type>
+		<deliciousness>9000</deliciousness>
+	</pork>
+</hungerapi>

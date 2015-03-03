@@ -5,6 +5,7 @@ var libxml = require('libxmljs');
 var fs = require('fs');
 
 var api = './api.xsd';
+var bekon = './bacon.xml';
 
 describe('Pork', function(){
 	var bacon = new Pork();
@@ -52,6 +53,26 @@ describe('Pork', function(){
 
 			var b = new Pork();
 			b.fromXml(x, xsd);
+			assert.equal(b.id, '1');
+			assert.equal(b.type, 'bacon');
+			assert.equal(b.deliciousness, '9000');
+		});
+
+		var bf = fs.readFileSync(bekon).toString();
+
+		it('should serialize from xml file without error', function(){
+			var b = new Pork();
+			b.fromXml(bf);
+			assert.equal(b.id, '1');
+			assert.equal(b.type, 'bacon');
+			assert.equal(b.deliciousness, '9000');
+		});
+
+		it('should serialize from xml file without error', function(){
+			var xsd = libxml.parseXml(fs.readFileSync(api).toString());
+
+			var b = new Pork();
+			b.fromXml(bf, xsd);
 			assert.equal(b.id, '1');
 			assert.equal(b.type, 'bacon');
 			assert.equal(b.deliciousness, '9000');
